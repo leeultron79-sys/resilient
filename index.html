@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResiliLink - AI 韌性協調引擎原型</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans HK', sans-serif; background-color: #f3f4f6; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function App() {
+            const [mode, setMode] = useState('personal'); // 'personal' or 'community'
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    {/* Header */}
+                    <header className="bg-white shadow-sm sticky top-0 z-10">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <i className="fa-solid fa-link text-blue-600 text-2xl"></i>
+                                <span className="font-bold text-xl text-gray-900">ResiliLink</span>
+                            </div>
+                            <div className="flex bg-gray-100 p-1 rounded-lg">
+                                <button 
+                                    onClick={() => setMode('personal')}
+                                    className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${mode === 'personal' ? 'bg-white shadow text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                                >
+                                    個人模式 (Personal)
+                                </button>
+                                <button 
+                                    onClick={() => setMode('community')}
+                                    className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${mode === 'community' ? 'bg-white shadow text-green-600' : 'text-gray-500 hover:text-gray-700'}`}
+                                >
+                                    社區模式 (Community)
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main Content */}
+                    <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+                        {mode === 'personal' ? <PersonalMode /> : <CommunityMode />}
+                    </main>
+                </div>
+            );
+        }
+
+        // --- Personal Mode Component ---
+        function PersonalMode() {
+            const [chatInput, setChatInput] = useState('');
+            const [messages, setMessages] = useState([
+                { sender: 'ai', text: '你好！我是你的 ResiliLink 韌性助理。最近生活上有遇到什麼挑戰或讓你擔心的事嗎？' }
+            ]);
+            const [tasks, setTasks] = useState([]);
+            const [isThinking, setIsThinking] = useState(false);
+
+            const handleSend = () => {
+                if (!chatInput.trim()) return;
+                
+                // Add user message
+                setMessages(prev => [...prev, { sender: 'user', text: chatInput }]);
+                const currentInput = chatInput;
+                setChatInput('');
+                setIsThinking(true);
+
+                // Simulate AI Orchestration Engine processing
+                setTimeout(() => {
+                    setIsThinking(false);
+                    setMessages(prev => [...prev, { 
+                        sender: 'ai', 
+                        text: '我明白這對你來說是個挑戰。我已經根據你的情況，為你規劃了以下的「韌性建立行動清單」。請查看右側的具體步驟。' 
+                    }]);
+                    
+                    // Generate tasks based on keyword simulation
+                    if (currentInput.includes('颱風') || currentInput.includes('天氣')) {
+                        setTasks([
+                            { phase: 'Assess', title: '檢查家居潛在風險', desc: '確認窗戶是否穩固，渠口是否暢通。', icon: 'fa-clipboard-check', color: 'text-orange-500' },
+                            { phase: 'Recommend', title: '準備應急物資包', desc: '購買3天份量的乾糧、食水及電筒電池。', icon: 'fa-box-open', color: 'text-blue-500' },
+                            { phase: 'Connect', title: '加入屋苑互助群組', desc: '連結：第一城第X座街坊WhatsApp互助群。', icon: 'fa-users', color: 'text-green-500' },
+                            { phase: 'Track', title: '完成準備並打卡', desc: '完成上述步驟後記錄，系統將自動調整你的防禦評分。', icon: 'fa-chart-line', color: 'text-purple-500' }
+                        ]);
+                    } else {
+                        // Default generic tasks (e.g. emotional/financial stress)
+                        setTasks([
+                            { phase: 'Assess', title: '情緒與壓力評估', desc: '完成一份3分鐘的簡單問卷，了解目前的壓力指數。', icon: 'fa-heart-pulse', color: 'text-orange-500' },
+                            { phase: 'Recommend', title: '實用舒壓技巧練習', desc: '每日進行 5 分鐘的呼吸練習 (點擊觀看教學)。', icon: 'fa-spa', color: 'text-blue-500' },
+                            { phase: 'Connect', title: '聯絡社區心理支援', desc: '已為你篩選出區內免費的 NGO 輔導服務，點擊預約。', icon: 'fa-hands-holding-child', color: 'text-green-500' },
+                            { phase: 'Adapt', title: '一週後復檢', desc: '下週系統會再次關心你的狀況，根據進度調整建議。', icon: 'fa-arrow-rotate-right', color: 'text-purple-500' }
+                        ]);
+                    }
+                }, 1500);
+            };
+
+            return (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full fade-in">
+                    {/* Chat Interface */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-[600px]">
+                        <div className="p-4 border-b border-gray-100 bg-blue-50 rounded-t-xl">
+                            <h2 className="font-semibold text-blue-800"><i className="fa-solid fa-robot mr-2"></i>AI 助理對話</h2>
+                            <p className="text-xs text-blue-600 mt-1">不僅是問答，而是為你協調整個行動方案 (Question → Orchestration)</p>
+                        </div>
+                        <div className="flex-grow p-4 overflow-y-auto space-y-4 bg-gray-50">
+                            {messages.map((msg, idx) => (
+                                <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`max-w-[80%] rounded-lg p-3 text-sm ${msg.sender === 'user' ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white text-gray-800 shadow-sm border border-gray-100 rounded-bl-none'}`}>
+                                        {msg.text}
+                                    </div>
+                                </div>
+                            ))}
+                            {isThinking && (
+                                <div className="flex justify-start fade-in">
+                                    <div className="bg-white text-gray-500 shadow-sm border border-gray-100 rounded-lg rounded-bl-none p-3 text-sm flex gap-1">
+                                        <span className="animate-bounce">.</span><span className="animate-bounce" style={{animationDelay: '0.2s'}}>.</span><span className="animate-bounce" style={{animationDelay: '0.4s'}}>.</span>
+                                        <span className="ml-2 text-xs">協調引擎分析中...</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-4 bg-white border-t border-gray-100 rounded-b-xl">
+                            <div className="flex gap-2">
+                                <input 
+                                    type="text" 
+                                    value={chatInput}
+                                    onChange={(e) => setChatInput(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                    placeholder="試輸入：「最近壓力很大」或「擔心週末的超級颱風」" 
+                                    className="flex-grow border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                />
+                                <button onClick={handleSend} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                                    <i className="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Orchestration Output (Tasks) */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-[600px] overflow-hidden">
+                        <div className="p-4 border-b border-gray-100 bg-gray-50">
+                            <h2 className="font-semibold text-gray-800"><i className="fa-solid fa-list-check mr-2"></i>專屬韌性行動清單 (Resilience Plan)</h2>
+                            <p className="text-xs text-gray-500 mt-1">根據協調引擎分析自動生成</p>
+                        </div>
+                        <div className="flex-grow p-6 overflow-y-auto bg-white">
+                            {tasks.length === 0 ? (
+                                <div className="h-full flex flex-col items-center justify-center text-gray-400">
+                                    <i className="fa-solid fa-clipboard text-4xl mb-3 opacity-50"></i>
+                                    <p className="text-sm">請在左側告訴助理你的情況</p>
+                                    <p className="text-xs mt-1">系統將為你生成結構化的行動方案</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-6 fade-in relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
+                                    {tasks.map((task, idx) => (
+                                        <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                            <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-blue-50 text-blue-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                                                <i className={`fa-solid ${task.icon} ${task.color}`}></i>
+                                            </div>
+                                            <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-100 shadow-sm bg-white">
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <span className={`text-xs font-bold uppercase tracking-wider ${task.color}`}>{task.phase}</span>
+                                                </div>
+                                                <h3 className="font-bold text-gray-800 text-sm">{task.title}</h3>
+                                                <p className="text-sm text-gray-600 mt-1">{task.desc}</p>
+                                                <button className="mt-3 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 px-3 rounded-md transition font-medium w-full">
+                                                    立即行動
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- Community Mode Component ---
+        function CommunityMode() {
+            return (
+                <div className="fade-in space-y-6">
+                    {/* KPI Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-green-500">
+                            <div className="text-gray-500 text-xs font-semibold uppercase">活躍社區居民</div>
+                            <div className="text-3xl font-bold text-gray-800 mt-1">1,248</div>
+                            <div className="text-xs text-green-600 mt-2"><i className="fa-solid fa-arrow-up mr-1"></i>本週增加 12%</div>
+                        </div>
+                        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-orange-500">
+                            <div className="text-gray-500 text-xs font-semibold uppercase">已識別的急切需求 (Gaps)</div>
+                            <div className="text-3xl font-bold text-gray-800 mt-1">86</div>
+                            <div className="text-xs text-orange-600 mt-2">主要為：長者支援、極端天氣準備</div>
+                        </div>
+                        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-blue-500">
+                            <div className="text-gray-500 text-xs font-semibold uppercase">已連結的社區服務</div>
+                            <div className="text-3xl font-bold text-gray-800 mt-1">432</div>
+                            <div className="text-xs text-gray-500 mt-2">透過平台自動推薦媒合</div>
+                        </div>
+                        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-purple-500">
+                            <div className="text-gray-500 text-xs font-semibold uppercase">整體韌性成長</div>
+                            <div className="text-3xl font-bold text-gray-800 mt-1">+18%</div>
+                            <div className="text-xs text-gray-500 mt-2">追蹤居民完成行動後的綜合評分</div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Map / Demographics Mock */}
+                        <div className="md:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                            <h2 className="font-bold text-gray-800 mb-4">即時社區韌性需求分佈 (Needs Map)</h2>
+                            <div className="bg-gray-100 rounded-lg h-64 w-full flex items-center justify-center relative overflow-hidden">
+                                {/* Fake Map UI */}
+                                <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")'}}></div>
+                                <div className="absolute top-1/4 left-1/3 w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
+                                <div className="absolute top-1/4 left-1/3 w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow"></div>
+                                
+                                <div className="absolute bottom-1/3 right-1/4 w-3 h-3 bg-orange-500 rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+                                <div className="absolute bottom-1/3 right-1/4 w-3 h-3 bg-orange-500 rounded-full border-2 border-white shadow"></div>
+                                
+                                <div className="absolute top-1/2 left-1/2 w-5 h-5 bg-yellow-500 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+                                <div className="absolute top-1/2 left-1/2 w-5 h-5 bg-yellow-500 rounded-full border-2 border-white shadow"></div>
+                                
+                                <span className="z-10 bg-white/80 px-3 py-1 rounded text-sm font-medium text-gray-600 shadow">地理資訊與需求熱點 (Demo)</span>
+                            </div>
+                            <div className="mt-4 flex gap-4 text-sm">
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-500"></span> 高危/急切需求</div>
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-orange-500"></span> 中度需求</div>
+                                <div className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-yellow-500"></span> 預防性準備</div>
+                            </div>
+                        </div>
+
+                        {/* Recent Alerts / Interventions */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col">
+                            <h2 className="font-bold text-gray-800 mb-4">系統協調與介入建議 (Engage)</h2>
+                            <div className="space-y-4 flex-grow overflow-y-auto">
+                                <div className="p-3 border border-orange-200 bg-orange-50 rounded-lg">
+                                    <div className="flex justify-between text-xs mb-1">
+                                        <span className="font-bold text-orange-700">自動警報 (Alert)</span>
+                                        <span className="text-orange-500">10分鐘前</span>
+                                    </div>
+                                    <h3 className="font-semibold text-sm text-gray-800">偵測到「情緒困擾」查詢激增</h3>
+                                    <p className="text-xs text-gray-600 mt-1">過去 24 小時內，本區有 15 名用戶透過個人助理查詢心理支援。</p>
+                                    <button className="mt-2 text-xs bg-orange-600 text-white px-3 py-1.5 rounded hover:bg-orange-700 w-full transition">發布群體關懷訊息及工作坊連結</button>
+                                </div>
+                                
+                                <div className="p-3 border border-blue-200 bg-blue-50 rounded-lg">
+                                    <div className="flex justify-between text-xs mb-1">
+                                        <span className="font-bold text-blue-700">計劃成效 (Evaluate)</span>
+                                        <span className="text-blue-500">2小時前</span>
+                                    </div>
+                                    <h3 className="font-semibold text-sm text-gray-800">「防風準備計劃」進度良好</h3>
+                                    <p className="text-xs text-gray-600 mt-1">已有 120 名長者透過平台對接到義工協助檢查窗戶。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
