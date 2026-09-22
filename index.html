@@ -47,28 +47,54 @@
             );
         }
 
-        function MentalAssessmentModal({ onClose }) { 
+        // --- FULL Assessment Modals ---
+        function MentalAssessmentModal({ onClose }) {
             const [step, setStep] = useState(0);
             const [score, setScore] = useState(0);
             const questions = [
                 { q: "過去兩週內，你有幾經常感覺到緊張、焦慮或有壓力？", options: [{label: "完全沒有", val: 0}, {label: "有幾天", val: 1}, {label: "超過一半的日子", val: 2}, {label: "幾乎每天", val: 3}] },
                 { q: "過去兩週內，你有幾經常覺得情緒低落、沮喪或絕望？", options: [{label: "完全沒有", val: 0}, {label: "有幾天", val: 1}, {label: "超過一半的日子", val: 2}, {label: "幾乎每天", val: 3}] }
             ];
+
             const handleAnswer = (val) => {
                 setScore(score + val);
                 if (step < questions.length) setStep(step + 1);
             };
+
             return (
                 <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay fade-in p-4">
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col">
-                        <div className="bg-blue-600 p-4 text-white flex justify-between items-center"><h3 className="font-bold"><i className="fa-solid fa-heart-pulse mr-2"></i>情緒與壓力評估</h3><button onClick={onClose} className="text-white"><i className="fa-solid fa-times text-lg"></i></button></div>
+                        <div className="bg-blue-600 p-4 text-white flex justify-between items-center">
+                            <h3 className="font-bold"><i className="fa-solid fa-heart-pulse mr-2"></i>情緒與壓力評估</h3>
+                            <button onClick={onClose} className="text-white hover:text-blue-200"><i className="fa-solid fa-times text-lg"></i></button>
+                        </div>
                         <div className="p-6">
                             {step < questions.length ? (
-                                <div className="fade-in"><div className="text-xs text-blue-500 font-bold mb-2">問題 {step + 1} / {questions.length}</div><h4 className="text-gray-800 font-medium text-lg mb-6">{questions[step].q}</h4>
-                                    <div className="space-y-3">{questions[step].options.map((opt, i) => (<button key={i} onClick={() => handleAnswer(opt.val)} className="w-full text-left p-3 border border-gray-200 rounded-lg hover:border-blue-500 text-sm text-gray-700">{opt.label}</button>))}</div>
+                                <div className="fade-in">
+                                    <div className="text-xs text-blue-500 font-bold mb-2">問題 {step + 1} / {questions.length}</div>
+                                    <h4 className="text-gray-800 font-medium text-lg mb-6">{questions[step].q}</h4>
+                                    <div className="space-y-3">
+                                        {questions[step].options.map((opt, i) => (
+                                            <button key={i} onClick={() => handleAnswer(opt.val)} className="w-full text-left p-3 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition text-sm text-gray-700">
+                                                {opt.label}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             ) : (
-                                <div className="fade-in text-center py-4"><h4 className="text-gray-800 font-bold text-xl mb-2">評估完成</h4><button onClick={onClose} className="bg-blue-600 text-white w-full py-2.5 rounded-lg mt-4">完成並返回</button></div>
+                                <div className="fade-in text-center py-4">
+                                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-100 text-orange-500 mb-4 text-3xl"><i className="fa-solid fa-chart-pie"></i></div>
+                                    <h4 className="text-gray-800 font-bold text-xl mb-2">評估結果</h4>
+                                    <p className="text-sm text-gray-600 mb-6">系統評估你目前的壓力指數屬於 <strong className={`ml-1 ${score > 3 ? 'text-red-500' : 'text-orange-500'}`}>{score > 3 ? '偏高' : '中度'}</strong>。</p>
+                                    <div className="bg-gray-50 p-4 rounded-lg text-left text-sm text-gray-700 mb-6 border border-gray-100">
+                                        <div className="font-bold text-gray-800 mb-1"><i className="fa-solid fa-gear text-blue-500 mr-2"></i>自動化協調行動：</div>
+                                        <ul className="list-disc pl-5 space-y-1">
+                                            <li>提升了清單中「情緒支援」類資源的優先級</li>
+                                            {score > 3 && <li className="text-red-600 font-medium">已為你篩選深宵情緒熱線，建議立即聯絡專業社工。</li>}
+                                        </ul>
+                                    </div>
+                                    <button onClick={onClose} className="bg-blue-600 text-white w-full py-2.5 rounded-lg font-medium hover:bg-blue-700 transition">完成並返回</button>
+                                </div>
                             )}
                         </div>
                     </div>
@@ -76,21 +102,59 @@
             );
         }
 
-        function TyphoonAssessmentModal({ onClose }) { 
+        function TyphoonAssessmentModal({ onClose }) {
             const [step, setStep] = useState(0);
+            const [score, setScore] = useState(0);
             const questions = [
-                { q: "你家裡目前有沒有準備至少 3 天的乾糧及飲用水？", options: [{label: "完全沒有", val: 2}, {label: "準備充足", val: 0}] }
+                { q: "1. 根據地理數據，你居住的地區是否屬於低窪地區（如杏花邨、鯉魚門等易水浸區域）？", options: [{label: "是，處於低窪地區", val: 2}, {label: "否，不是低窪地區", val: 0}] },
+                { q: "2. 你家裡目前有沒有準備至少 3 天的乾糧及飲用水？", options: [{label: "完全沒有", val: 2}, {label: "有少量，不足3天", val: 1}, {label: "準備充足", val: 0}] },
+                { q: "3. 家中窗戶是否已貼上防風膠紙並鎖緊？", options: [{label: "未處理", val: 1}, {label: "已完成", val: 0}] }
             ];
-            const handleAnswer = (val) => { if (step < questions.length) setStep(step + 1); };
+
+            const handleAnswer = (val) => {
+                setScore(score + val);
+                if (step < questions.length) setStep(step + 1);
+            };
+
             return (
                 <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay fade-in p-4">
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col">
-                        <div className="bg-blue-600 p-4 text-white flex justify-between items-center"><h3 className="font-bold"><i className="fa-solid fa-cloud-bolt mr-2"></i>極端天氣評估</h3><button onClick={onClose} className="text-white"><i className="fa-solid fa-times"></i></button></div>
+                        <div className="bg-blue-600 p-4 text-white flex justify-between items-center">
+                            <h3 className="font-bold"><i className="fa-solid fa-cloud-bolt mr-2"></i>極端天氣防禦力評估</h3>
+                            <button onClick={onClose} className="text-white hover:text-blue-200"><i className="fa-solid fa-times text-lg"></i></button>
+                        </div>
                         <div className="p-6">
                             {step < questions.length ? (
-                                <div className="fade-in"><h4 className="text-gray-800 font-medium text-lg mb-6">{questions[step].q}</h4><div className="space-y-3">{questions[step].options.map((opt, i) => (<button key={i} onClick={() => handleAnswer(opt.val)} className="w-full text-left p-3 border rounded-lg text-sm">{opt.label}</button>))}</div></div>
+                                <div className="fade-in">
+                                    <div className="text-xs text-blue-500 font-bold mb-2">問題 {step + 1} / {questions.length}</div>
+                                    <h4 className="text-gray-800 font-medium text-lg mb-6">{questions[step].q}</h4>
+                                    <div className="space-y-3">
+                                        {questions[step].options.map((opt, i) => (
+                                            <button key={i} onClick={() => handleAnswer(opt.val)} className="w-full text-left p-3 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition text-sm text-gray-700">
+                                                {opt.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
                             ) : (
-                                <div className="fade-in text-center py-4"><h4 className="text-gray-800 font-bold text-xl mb-2">評估完成</h4><button onClick={onClose} className="bg-blue-600 text-white w-full py-2.5 rounded-lg mt-4">返回</button></div>
+                                <div className="fade-in text-center py-4">
+                                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-100 text-orange-500 mb-4 text-3xl"><i className="fa-solid fa-shield-halved"></i></div>
+                                    <h4 className="text-gray-800 font-bold text-xl mb-2">防禦評估結果</h4>
+                                    <p className="text-sm text-gray-600 mb-6">
+                                        你的極端天氣防禦力屬於 
+                                        <strong className={`ml-1 ${score > 2 ? 'text-red-500' : (score > 0 ? 'text-orange-500' : 'text-green-500')}`}>
+                                            {score > 2 ? '高危 (未準備)' : (score > 0 ? '中度風險' : '安全 (準備充足)')}
+                                        </strong>。
+                                    </p>
+                                    <div className="bg-gray-50 p-4 rounded-lg text-left text-sm text-gray-700 mb-6 border border-gray-100">
+                                        <div className="font-bold text-gray-800 mb-1"><i className="fa-solid fa-gear text-blue-500 mr-2"></i>自動化協調行動：</div>
+                                        <ul className="list-disc pl-5 space-y-1">
+                                            {score > 2 && <li className="text-red-600 font-medium">已觸發高危警報：將你列入特別關注名單。</li>}
+                                            <li>自動為你生成「附近超市及五金舖營業地圖」在清單中</li>
+                                        </ul>
+                                    </div>
+                                    <button onClick={onClose} className="bg-blue-600 text-white w-full py-2.5 rounded-lg font-medium hover:bg-blue-700 transition">完成並返回</button>
+                                </div>
                             )}
                         </div>
                     </div>
@@ -113,7 +177,10 @@
             return (
                 <div className="fixed inset-0 z-50 flex items-center justify-center modal-overlay fade-in p-4">
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col">
-                        <div className="bg-red-600 p-4 text-white flex justify-between items-center"><h3 className="font-bold"><i className="fa-solid fa-file-signature mr-2"></i>AI 智能代填與遞交系統</h3><button onClick={onClose} className="text-white"><i className="fa-solid fa-times text-lg"></i></button></div>
+                        <div className="bg-red-600 p-4 text-white flex justify-between items-center">
+                            <h3 className="font-bold"><i className="fa-solid fa-file-signature mr-2"></i>AI 智能代填與遞交系統</h3>
+                            <button onClick={onClose} className="text-white hover:text-red-200"><i className="fa-solid fa-times text-lg"></i></button>
+                        </div>
                         <div className="p-6">
                             {progress < 100 ? (
                                 <div className="py-6 text-center">
@@ -127,13 +194,15 @@
                                 <div className="fade-in text-center py-4">
                                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600 mb-4 text-3xl"><i className="fa-solid fa-check-double"></i></div>
                                     <h4 className="text-gray-800 font-bold text-xl mb-2">表格已準備就緒</h4>
-                                    <div className="bg-gray-50 p-4 rounded-lg text-left text-sm text-gray-700 mb-6">
+                                    <div className="bg-gray-50 p-4 rounded-lg text-left text-sm text-gray-700 mb-6 border border-gray-100">
                                         <ul className="space-y-2">
                                             <li className="flex justify-between border-b pb-1"><span>申請項目：</span> <strong>綜援 (失業類別)</strong></li>
                                             <li className="flex justify-between border-b pb-1"><span>預計填寫時間：</span> <span className="line-through text-gray-400 mr-2">45 分鐘</span> <strong className="text-green-600">5 秒</strong></li>
                                         </ul>
                                     </div>
-                                    <button onClick={() => alert("即將喚醒智方便 App...")} className="bg-green-600 text-white w-full py-2.5 rounded-lg font-bold"><i className="fa-solid fa-fingerprint mr-2"></i>使用「智方便」遞交</button>
+                                    <button onClick={() => alert("即將喚醒智方便 App...")} className="bg-green-600 text-white w-full py-2.5 rounded-lg font-bold hover:bg-green-700 transition flex items-center justify-center gap-2">
+                                        <i className="fa-solid fa-fingerprint"></i>使用「智方便」遞交
+                                    </button>
                                 </div>
                             )}
                         </div>
@@ -142,10 +211,11 @@
             );
         }
 
+        // --- Personal Mode Component ---
         function PersonalMode() {
             const [chatInput, setChatInput] = useState('');
             const [messages, setMessages] = useState([
-                { sender: 'ai', text: '你好！我是你的 ResiliLink 韌性協調引擎。你可以試輸入：「我失業，無錢交租點算」。' }
+                { sender: 'ai', text: '你好！我是你的 ResiliLink 韌性協調引擎。你可以試輸入：「最近壓力好大」、「聽日打風」或「我失業，無錢交租點算」。' }
             ]);
             const [tasks, setTasks] = useState([]);
             const [isThinking, setIsThinking] = useState(false);
@@ -160,7 +230,7 @@
                 setIsThinking(true);
                 
                 let category = 'generic';
-                if (input.includes('風') || input.includes('雨')) category = 'typhoon';
+                if (input.includes('風') || input.includes('雨') || input.includes('水')) category = 'typhoon';
                 else if (input.includes('熱') || input.includes('中暑')) category = 'heat';
                 else if (input.includes('失業') || input.includes('無錢') || input.includes('窮') || input.includes('租')) category = 'financial';
                 else if (input.includes('壓力') || input.includes('絕望') || input.includes('情緒')) category = 'mental';
@@ -171,26 +241,43 @@
                     if (category === 'typhoon') setSystemLog('📂 找到相關文件: HKO-TYPHOON-001');
                     else if (category === 'financial') setSystemLog('📂 找到相關文件: SWD-CSSA-302');
                     else if (category === 'mental') setSystemLog('📂 找到相關文件: NGO-MENTAL-001');
+                    else if (category === 'heat') setSystemLog('📂 找到相關文件: HKO-HEAT-002');
                     else setSystemLog('📂 搜索一般社區資源庫...');
                 }, 800);
 
                 setTimeout(() => {
                     setIsThinking(false);
                     setSystemLog('');
-                    setMessages(prev => [...prev, { sender: 'ai', text: '收到。已為你動態生成專屬行動清單。' }]);
+                    setMessages(prev => [...prev, { sender: 'ai', text: '收到。我已經從知識庫中檢索了相關指引，為你動態生成了專屬的「韌性行動清單」。請查看右側。' }]);
                     
                     if (category === 'financial') {
                         setTasks([
                             { id: 'f1', phase: 'Assess', title: '財務及福利資格評估', desc: 'AI 自動比對你的年齡及就業狀態，確認符合綜援申請資格。', icon: 'fa-calculator', color: 'text-orange-500' },
-                            { id: 'f2', phase: 'Execute', title: 'AI 智能代填政府表格', desc: '透過 OCR 讀取你的月結單並自動填寫 10 頁社署表格。', icon: 'fa-file-signature', color: 'text-red-500', modalType: 'financial' }
+                            { id: 'f2', phase: 'Execute', title: 'AI 智能代填政府表格', desc: '透過 OCR 讀取你的月結單並自動填寫 10 頁社署表格。', icon: 'fa-file-signature', color: 'text-red-500', modalType: 'financial' },
+                            { id: 'f3', phase: 'Connect', title: '預約就近社會保障辦事處', desc: '已為你鎖定沙田區辦事處，點擊查看地址及預約面見時間。', icon: 'fa-building-user', color: 'text-green-500' }
                         ]);
                     } else if (category === 'typhoon') {
                         setTasks([
-                            { id: 'w1', phase: 'Assess', title: '颱風防禦力評估', desc: '點擊進行快速評估', icon: 'fa-cloud-bolt', color: 'text-orange-500', modalType: 'typhoon' }
+                            { id: 'w1', phase: 'Assess', title: '颱風防禦力評估', desc: '點擊進行快速評估，確認防水設施及物資準備進度。', icon: 'fa-cloud-bolt', color: 'text-orange-500', modalType: 'typhoon' },
+                            { id: 'w2', phase: 'Recommend', title: '準備擋水板及乾糧', desc: '根據 HKO-001 指引，提早安裝擋水板並儲備3天糧水。', icon: 'fa-box-open', color: 'text-blue-500' },
+                            { id: 'w3', phase: 'Connect', title: '臨時庇護中心資訊', desc: '檢索最近的民政署庇護中心，點擊查看地圖。', icon: 'fa-map-location-dot', color: 'text-green-500' }
                         ]);
                     } else if (category === 'mental') {
                         setTasks([
-                            { id: 'm1', phase: 'Assess', title: '情緒與壓力評估', desc: '點擊進行問卷', icon: 'fa-heart-pulse', color: 'text-orange-500', modalType: 'mental' }
+                            { id: 'm1', phase: 'Assess', title: '情緒與壓力評估', desc: '點擊進行一份3分鐘的互動問卷，了解目前的壓力指數。', icon: 'fa-heart-pulse', color: 'text-orange-500', modalType: 'mental' },
+                            { id: 'm2', phase: 'Recommend', title: '實用舒壓技巧練習', desc: '每日進行 5 分鐘的呼吸練習 (點擊觀看教學)。', icon: 'fa-spa', color: 'text-blue-500' },
+                            { id: 'm3', phase: 'Connect', title: '聯絡社區心理支援', desc: '已為你篩選出區內免費的 NGO 輔導服務，點擊預約。', icon: 'fa-hands-holding-child', color: 'text-green-500' }
+                        ]);
+                    } else if (category === 'heat') {
+                        setTasks([
+                            { id: 'h1', phase: 'Assess', title: '中暑風險與水分評估', desc: '根據長者的健康狀況，評估酷熱天氣下的風險。', icon: 'fa-sun', color: 'text-orange-500' },
+                            { id: 'h2', phase: 'Recommend', title: '調整戶外活動時間', desc: '避免在上午11時至下午3時進行戶外活動。', icon: 'fa-clock', color: 'text-blue-500' },
+                            { id: 'h3', phase: 'Connect', title: '避暑中心地圖', desc: '已為你定位全港19間夜間避暑中心，點擊導航。', icon: 'fa-location-dot', color: 'text-green-500' }
+                        ]);
+                    } else {
+                        setTasks([
+                            { id: 'g1', phase: 'Assess', title: '一般生活需求評估', desc: '簡單幾條問題，幫助系統更精準推薦資源。', icon: 'fa-clipboard-check', color: 'text-orange-500' },
+                            { id: 'g2', phase: 'Connect', title: '社區服務目錄', desc: '瀏覽你所屬地區的社福機構名單。', icon: 'fa-list', color: 'text-green-500' }
                         ]);
                     }
                 }, 2000);
@@ -203,7 +290,9 @@
                     {activeModal === 'financial' && <FinancialExecutionModal onClose={() => setActiveModal(null)} />}
                     
                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-[600px]">
-                        <div className="p-4 border-b border-gray-100 bg-blue-50 rounded-t-xl"><h2 className="font-semibold text-blue-800"><i className="fa-solid fa-robot mr-2"></i>智能協調對話 (Agentic 示範版)</h2></div>
+                        <div className="p-4 border-b border-gray-100 bg-blue-50 rounded-t-xl">
+                            <h2 className="font-semibold text-blue-800"><i className="fa-solid fa-robot mr-2"></i>智能協調對話 (Agentic 示範版)</h2>
+                        </div>
                         <div className="flex-grow p-4 overflow-y-auto space-y-4 bg-gray-50">
                             {messages.map((msg, idx) => (
                                 <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -212,42 +301,52 @@
                             ))}
                             {isThinking && (
                                 <div className="flex flex-col gap-2 fade-in">
-                                    <div className="bg-white text-gray-500 p-3 w-fit"><span className="animate-bounce">.</span><span className="animate-bounce" style={{animationDelay: '0.2s'}}>.</span></div>
-                                    <div className="text-xs text-blue-600 ml-2 font-mono">{systemLog}</div>
+                                    <div className="bg-white text-gray-500 shadow-sm border border-gray-100 rounded-lg p-3 w-fit"><span className="animate-bounce">.</span><span className="animate-bounce" style={{animationDelay: '0.2s'}}>.</span></div>
+                                    <div className="text-xs text-blue-600 ml-2 font-mono"><i className="fa-solid fa-database mr-1"></i>{systemLog}</div>
                                 </div>
                             )}
                         </div>
                         <div className="p-4 bg-white border-t border-gray-100 rounded-b-xl">
                             <div className="flex gap-2">
-                                <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSend()} placeholder="輸入：「我失業，無錢交租點算」" className="flex-grow border rounded-lg px-4 py-2" />
-                                <button onClick={handleSend} className="bg-blue-600 text-white px-4 py-2 rounded-lg"><i className="fa-solid fa-paper-plane"></i></button>
+                                <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSend()} placeholder="輸入：「我失業」或「打風點算」" className="flex-grow border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500" />
+                                <button onClick={handleSend} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"><i className="fa-solid fa-paper-plane"></i></button>
                             </div>
                         </div>
                     </div>
 
                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-[600px] overflow-hidden">
-                        <div className="p-4 border-b border-gray-100 bg-gray-50"><h2 className="font-semibold text-gray-800"><i className="fa-solid fa-list-check mr-2"></i>行動清單</h2></div>
+                        <div className="p-4 border-b border-gray-100 bg-gray-50"><h2 className="font-semibold text-gray-800"><i className="fa-solid fa-list-check mr-2"></i>動態生成的行動清單</h2></div>
                         <div className="flex-grow p-6 overflow-y-auto bg-white">
-                            {tasks.map((task, idx) => (
-                                <div key={idx} className="relative flex items-center justify-between mb-4 group is-active">
-                                    <div className="w-full p-4 rounded-xl border shadow-sm bg-white hover:border-blue-200 transition">
-                                        <div className="flex items-center justify-between mb-1"><span className={`text-xs font-bold uppercase tracking-wider ${task.color}`}>{task.phase}</span></div>
-                                        <h3 className="font-bold text-gray-800 text-sm">{task.title}</h3>
-                                        <p className="text-sm text-gray-600 mt-1">{task.desc}</p>
-                                        {task.modalType && (
-                                            <button onClick={() => setActiveModal(task.modalType)} className={`mt-3 text-xs py-1.5 px-3 rounded-md transition font-medium w-full ${task.phase === 'Execute' ? 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-200' : 'bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-200'}`}>
-                                                {task.phase === 'Execute' ? '▶ 啟動 AI 代理執行' : '▶ 開始評估'}
-                                            </button>
-                                        )}
-                                    </div>
+                            {tasks.length === 0 ? (
+                                <div className="h-full flex flex-col items-center justify-center text-gray-400"><i className="fa-solid fa-wand-magic-sparkles text-4xl mb-3 opacity-50"></i><p className="text-sm">系統會根據你的問題動態生成清單</p></div>
+                            ) : (
+                                <div className="space-y-6 fade-in relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
+                                    {tasks.map((task, idx) => (
+                                        <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                            <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-blue-50 text-blue-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10"><i className={`fa-solid ${task.icon} ${task.color}`}></i></div>
+                                            <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-100 shadow-sm bg-white hover:border-blue-200 transition">
+                                                <div className="flex items-center justify-between mb-1"><span className={`text-xs font-bold uppercase tracking-wider ${task.color}`}>{task.phase}</span></div>
+                                                <h3 className="font-bold text-gray-800 text-sm">{task.title}</h3>
+                                                <p className="text-sm text-gray-600 mt-1">{task.desc}</p>
+                                                {task.modalType ? (
+                                                    <button onClick={() => setActiveModal(task.modalType)} className={`mt-3 text-xs py-1.5 px-3 rounded-md transition font-medium w-full ${task.phase === 'Execute' ? 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-200' : 'bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-200'}`}>
+                                                        {task.phase === 'Execute' ? '▶ 啟動 AI 代理執行' : '▶ 開始評估'}
+                                                    </button>
+                                                ) : (
+                                                    <button onClick={() => alert('此處將連接相關的 API 或外部網站。')} className="mt-3 text-xs py-1.5 px-3 rounded-md transition font-medium w-full bg-gray-100 text-gray-700 hover:bg-gray-200">立即行動</button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
                 </div>
             );
         }
 
+        // --- Community Mode Component (Campaign Builder) ---
         function CommunityMode() {
             const [campaignInput, setCampaignInput] = useState('');
             const [isGenerating, setIsGenerating] = useState(false);
@@ -258,7 +357,7 @@
                 setIsGenerating(true);
                 setTimeout(() => {
                     setIsGenerating(false);
-                    setCampaignPlan({ title: "盛夏防暑關懷大行動", target: "區內 65歲以上獨居長者", process: ["派發消暑包", "設定警報"], resources: ["電解質水", "義工 15名"], smsDraft: "陳伯伯，天氣酷熱，本中心將派發消暑包..." });
+                    setCampaignPlan({ title: "盛夏防暑關懷大行動", target: "區內 65歲以上獨居長者 (152人)", process: ["派發消暑包", "自動預警"], resources: ["電解質水 x 200", "義工 15名"], smsDraft: "陳伯伯，天氣酷熱，本中心將派發消暑包..." });
                 }, 2000);
             };
 
@@ -268,17 +367,22 @@
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-[550px]">
                             <div className="p-5 border-b border-gray-100 bg-blue-50 rounded-t-xl"><h2 className="font-bold text-blue-800"><i className="fa-solid fa-wand-magic-sparkles mr-2"></i>AI 韌性計劃生成器</h2></div>
                             <div className="p-5 flex flex-col flex-grow">
-                                <textarea className="w-full border rounded-lg p-3 h-32" placeholder="「我想針對區內獨居長者，搞一個預防中暑活動」" value={campaignInput} onChange={(e) => setCampaignInput(e.target.value)}></textarea>
-                                <button onClick={handleGenerate} className="mt-4 py-3 bg-blue-600 text-white rounded-lg">{isGenerating ? '生成中...' : '生成活動企劃'}</button>
+                                <textarea className="w-full border border-gray-300 rounded-lg p-3 text-sm h-32 focus:outline-none" placeholder="輸入：「我想針對區內獨居長者，搞一個預防中暑活動」" value={campaignInput} onChange={(e) => setCampaignInput(e.target.value)}></textarea>
+                                <button onClick={handleGenerate} className="mt-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition">{isGenerating ? 'AI 正在生成計劃中...' : '生成活動企劃'}</button>
                             </div>
                         </div>
                         <div className="bg-gray-50 rounded-xl shadow-inner border border-gray-200 h-[550px] overflow-y-auto p-6">
                             {campaignPlan && (
-                                <div className="bg-white border shadow-sm rounded-xl p-6">
+                                <div className="bg-white border shadow-sm rounded-xl p-6 fade-in">
+                                    <div className="text-xs font-bold text-blue-600 uppercase mb-1">自動生成草案</div>
                                     <h3 className="text-xl font-bold mb-4">{campaignPlan.title}</h3>
-                                    <p><strong>目標：</strong>{campaignPlan.target}</p>
-                                    <p><strong>流程：</strong>{campaignPlan.process.join(', ')}</p>
-                                    <div className="mt-4 p-3 bg-gray-100 rounded"><strong>SMS草稿：</strong>{campaignPlan.smsDraft}</div>
+                                    <div className="space-y-4 text-sm">
+                                        <div><strong className="text-gray-700">目標對象：</strong><span className="ml-2">{campaignPlan.target}</span></div>
+                                        <div><strong className="text-gray-700">流程建議：</strong><ul className="list-disc pl-5 mt-1">{campaignPlan.process.map((step, i) => <li key={i}>{step}</li>)}</ul></div>
+                                        <div><strong className="text-gray-700">所需物資：</strong><span className="ml-2">{campaignPlan.resources.join(', ')}</span></div>
+                                        <div className="bg-gray-100 p-3 rounded-lg mt-4 italic border-l-4 border-purple-400">"{campaignPlan.smsDraft}"</div>
+                                    </div>
+                                    <button className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition">一鍵建立並群發短訊</button>
                                 </div>
                             )}
                         </div>
