@@ -1,6 +1,6 @@
 // ResiliLink v3 — Cloudflare Worker. No API credentials in this repository.
 const OPENAI_URL = 'https://api.openai.com/v1/responses';
-const MAX_BODY_BYTES = 2400;
+const MAX_BODY_BYTES = 4096;
 const MAX_USER_CHARS = 800;
 const INSTRUCTIONS = [
   '你是 ResiliLink Personal Mode 的社區韌性支援助理，使用清晰自然的繁體中文（香港語境）。',
