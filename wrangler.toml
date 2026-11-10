@@ -1,0 +1,15 @@
+name = "resililink-v3-api"
+main = "src/worker.js"
+compatibility_date = "2026-11-01"
+
+# Use the exact public frontend origin, e.g. https://leeultron79-sys.github.io
+# If testing locally, add http://localhost:8000 separately, comma-separated.
+[vars]
+ALLOWED_ORIGINS = "https://leeultron79-sys.github.io"
+
+# Worker Rate Limiting binding. Limit requests per IP; this is NOT a total billing cap.
+[[unsafe.bindings]]
+name = "MVP_RATE_LIMITER"
+type = "ratelimit"
+namespace_id = "1001"
+simple = { limit = 5, period = 60 }
